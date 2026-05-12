@@ -5,6 +5,7 @@ const profiles = [
         age: 24,
         bio: "Me encanta el esquí de fondo y el café en Oslo ⛷️☕",
         distance: "A 5 km de ti (Oslo)",
+        interests: ["esquí", "café", "naturaleza"],
         image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -13,6 +14,7 @@ const profiles = [
         age: 26,
         bio: "Diseñadora de Bergen. Siempre buscando la próxima aurora boreal 🌌",
         distance: "A 12 km de ti (Bergen)",
+        interests: ["diseño", "viajes", "fotografía"],
         image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -21,6 +23,7 @@ const profiles = [
         age: 23,
         bio: "Senderismo por los fiordos los fines de semana 🏔️",
         distance: "A 3 km de ti (Stavanger)",
+        interests: ["senderismo", "montaña", "deporte"],
         image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -29,6 +32,7 @@ const profiles = [
         age: 27,
         bio: "Arquitecta. Amante del salmón ahumado y el diseño nórdico 🐟",
         distance: "A 8 km de ti (Trondheim)",
+        interests: ["arquitectura", "comida", "diseño"],
         image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -37,6 +41,7 @@ const profiles = [
         age: 25,
         bio: "Disfrutando del sol de medianoche en el verano nórdico ☀️",
         distance: "A 1 km de ti (Tromsø)",
+        interests: ["verano", "fiestas", "música"],
         image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     }
 ];
@@ -44,11 +49,12 @@ const profiles = [
 const cardStack = document.getElementById('card-stack');
 let currentCardIndex = 0;
 let matchedProfiles = [];
+let filteredProfiles = [...profiles];
 
 function createCard(profile, index) {
     const card = document.createElement('div');
     card.classList.add('card');
-    card.style.zIndex = profiles.length - index;
+    card.style.zIndex = filteredProfiles.length - index;
     
     // Scale and translate for background cards
     if (index > currentCardIndex) {
@@ -63,6 +69,9 @@ function createCard(profile, index) {
         <div class="card-info">
             <h2 class="card-title">${profile.name} <span class="card-age">${profile.age}</span></h2>
             <p class="card-bio"><i class="fa-solid fa-quote-left"></i> ${profile.bio}</p>
+            <div class="card-interests">
+                ${profile.interests ? profile.interests.map(i => `<span class="interest-tag">${i}</span>`).join('') : ''}
+            </div>
             <p class="distance"><i class="fa-solid fa-location-dot"></i> ${profile.distance}</p>
         </div>
     `;
@@ -77,14 +86,14 @@ function createCard(profile, index) {
 
 function renderCards() {
     cardStack.innerHTML = '';
-    profiles.forEach((profile, index) => {
+    filteredProfiles.forEach((profile, index) => {
         if (index >= currentCardIndex && index < currentCardIndex + 3) {
             const card = createCard(profile, index);
             cardStack.appendChild(card);
         }
     });
 
-    if (currentCardIndex >= profiles.length) {
+    if (currentCardIndex >= filteredProfiles.length) {
         cardStack.innerHTML = `
             <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#94a3b8; text-align:center; padding: 20px;">
                 <div style="width:80px;height:80px;border-radius:50%;background:#1e293b;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);">
@@ -176,7 +185,7 @@ function makeCardDraggable(card) {
 
 // Controls logic
 document.getElementById('btn-no').addEventListener('click', () => {
-    if (currentCardIndex >= profiles.length) return;
+    if (currentCardIndex >= filteredProfiles.length) return;
     const currentCard = cardStack.querySelector('.card');
     if(currentCard) {
         currentCard.querySelector('.stamp-nope').style.opacity = 1;
@@ -190,7 +199,7 @@ document.getElementById('btn-no').addEventListener('click', () => {
 });
 
 document.getElementById('btn-yes').addEventListener('click', () => {
-    if (currentCardIndex >= profiles.length) return;
+    if (currentCardIndex >= filteredProfiles.length) return;
     const currentCard = cardStack.querySelector('.card');
     if(currentCard) {
         currentCard.querySelector('.stamp-like').style.opacity = 1;
@@ -199,7 +208,7 @@ document.getElementById('btn-yes').addEventListener('click', () => {
 });
 
 document.getElementById('btn-star').addEventListener('click', () => {
-    if (currentCardIndex >= profiles.length) return;
+    if (currentCardIndex >= filteredProfiles.length) return;
     const currentCard = cardStack.querySelector('.card');
     if(currentCard) {
         currentCard.style.transition = 'transform 0.4s ease-out';
@@ -226,7 +235,7 @@ let pendingCard = null;
 let pendingDirection = null;
 
 function showMatchModal(card, direction) {
-    const profile = profiles[currentCardIndex];
+    const profile = filteredProfiles[currentCardIndex];
     modalImg.src = profile.image;
     modalName.textContent = `${profile.name}, ${profile.age}`;
     modalBio.innerHTML = `<i class="fa-solid fa-quote-left"></i> ${profile.bio}`;
@@ -254,7 +263,7 @@ modalConfirm.addEventListener('click', () => {
         pendingCard.style.transform = `translate(${pendingDirection * window.innerWidth}px, 100px) rotate(${pendingDirection * 30}deg)`;
         
         // Save match
-        matchedProfiles.push(profiles[currentCardIndex]);
+        matchedProfiles.push(filteredProfiles[currentCardIndex]);
         updateChatView();
 
         setTimeout(() => {
@@ -362,3 +371,58 @@ function updateChatView() {
 
 // Initial badge state
 badge.textContent = '0';
+
+// Filter Logic
+const filterModal = document.getElementById('filter-modal');
+const navFilterBtn = document.getElementById('nav-filter-btn');
+const closeFilterModal = document.getElementById('close-filter-modal');
+const applyFiltersBtn = document.getElementById('apply-filters-btn');
+const ageFilter = document.getElementById('age-filter');
+const ageValue = document.getElementById('age-value');
+const interestFilter = document.getElementById('interest-filter');
+
+if(navFilterBtn) {
+    navFilterBtn.addEventListener('click', () => {
+        filterModal.classList.add('active');
+    });
+}
+
+if(closeFilterModal) {
+    closeFilterModal.addEventListener('click', () => {
+        filterModal.classList.remove('active');
+    });
+}
+
+if(ageFilter) {
+    ageFilter.addEventListener('input', (e) => {
+        ageValue.textContent = e.target.value;
+    });
+}
+
+if(applyFiltersBtn) {
+    applyFiltersBtn.addEventListener('click', () => {
+        const maxAge = parseInt(ageFilter.value);
+        const interestsText = interestFilter.value.toLowerCase().trim();
+        const searchInterests = interestsText ? interestsText.split(',').map(i => i.trim()).filter(i => i) : [];
+
+        filteredProfiles = profiles.filter(p => {
+            // Age filter
+            if (p.age > maxAge) return false;
+            
+            // Interests filter
+            if (searchInterests.length > 0) {
+                const hasCommonInterest = searchInterests.some(searchInt => {
+                    const inInterests = p.interests && p.interests.some(i => i.toLowerCase().includes(searchInt));
+                    const inBio = p.bio.toLowerCase().includes(searchInt);
+                    return inInterests || inBio;
+                });
+                if (!hasCommonInterest) return false;
+            }
+            return true;
+        });
+
+        currentCardIndex = 0; // reset
+        renderCards();
+        filterModal.classList.remove('active');
+    });
+}

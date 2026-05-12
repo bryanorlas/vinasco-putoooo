@@ -47,7 +47,7 @@
         <!-- Navigation -->
         <nav class="bottom-nav">
             <button class="nav-item active"><i class="fa-solid fa-fire"></i></button>
-            <button class="nav-item"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="nav-item" id="nav-filter-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="nav-item"><i class="fa-solid fa-star"></i></button>
             <button class="nav-item"><i class="fa-solid fa-user"></i></button>
         </nav>
@@ -87,6 +87,26 @@
                         <textarea id="profile-bio-input" rows="3" placeholder="Escribe algo sobre ti..."></textarea>
                     </div>
                     <button class="modal-btn confirm-btn" id="save-profile-btn" style="width: 100%; margin-top: 15px;">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+        <!-- Filter Modal -->
+        <div class="modal-overlay" id="filter-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="margin-bottom: 0;">Filtros</h3>
+                    <button class="close-btn" id="close-filter-modal"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="profile-edit-form">
+                    <div class="form-group">
+                        <label for="age-filter">Edad Máxima: <span id="age-value">30</span></label>
+                        <input type="range" id="age-filter" min="18" max="50" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="interest-filter">Temática / Interés</label>
+                        <input type="text" id="interest-filter" placeholder="ej. café, diseño, esquí">
+                    </div>
+                    <button class="modal-btn confirm-btn" id="apply-filters-btn" style="width: 100%; margin-top: 15px;">Aplicar Filtros</button>
                 </div>
             </div>
         </div>
