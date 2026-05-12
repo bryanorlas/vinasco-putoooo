@@ -144,12 +144,17 @@ function makeCardDraggable(card) {
         if (Math.abs(deltaX) > 100) {
             // Swipe successful
             const direction = deltaX > 0 ? 1 : -1;
-            card.style.transform = `translate(${direction * window.innerWidth}px, ${direction * 100}px) rotate(${direction * 30}deg)`;
             
-            setTimeout(() => {
-                currentCardIndex++;
-                renderCards();
-            }, 300);
+            if (direction === 1) {
+                showMatchModal(card, direction);
+            } else {
+                card.style.transform = `translate(${direction * window.innerWidth}px, ${direction * 100}px) rotate(${direction * 30}deg)`;
+                
+                setTimeout(() => {
+                    currentCardIndex++;
+                    renderCards();
+                }, 300);
+            }
         } else {
             // Revert back
             card.style.transform = 'translate(0px, 0px) rotate(0deg)';
@@ -188,12 +193,7 @@ document.getElementById('btn-yes').addEventListener('click', () => {
     const currentCard = cardStack.querySelector('.card');
     if(currentCard) {
         currentCard.querySelector('.stamp-like').style.opacity = 1;
-        currentCard.style.transition = 'transform 0.4s ease-out';
-        currentCard.style.transform = `translate(${window.innerWidth}px, 100px) rotate(30deg)`;
-        setTimeout(() => {
-            currentCardIndex++;
-            renderCards();
-        }, 300);
+        showMatchModal(currentCard, 1);
     }
 });
 
@@ -212,3 +212,95 @@ document.getElementById('btn-star').addEventListener('click', () => {
 
 // Initialize
 renderCards();
+
+// Modal logic
+const matchModal = document.getElementById('match-modal');
+const modalCancel = document.getElementById('modal-cancel');
+const modalConfirm = document.getElementById('modal-confirm');
+const modalImg = document.getElementById('modal-img');
+const modalName = document.getElementById('modal-name');
+const modalBio = document.getElementById('modal-bio');
+
+let pendingCard = null;
+let pendingDirection = null;
+
+function showMatchModal(card, direction) {
+    const profile = profiles[currentCardIndex];
+    modalImg.src = profile.image;
+    modalName.textContent = `${profile.name}, ${profile.age}`;
+    modalBio.innerHTML = `<i class="fa-solid fa-quote-left"></i> ${profile.bio}`;
+    
+    pendingCard = card;
+    pendingDirection = direction;
+    matchModal.classList.add('active');
+}
+
+modalCancel.addEventListener('click', () => {
+    matchModal.classList.remove('active');
+    if (pendingCard) {
+        pendingCard.style.transition = 'transform 0.4s ease-out';
+        pendingCard.style.transform = 'translate(0px, 0px) rotate(0deg)';
+        const likeStamp = pendingCard.querySelector('.stamp-like');
+        if (likeStamp) likeStamp.style.opacity = 0;
+    }
+    pendingCard = null;
+});
+
+modalConfirm.addEventListener('click', () => {
+    matchModal.classList.remove('active');
+    if (pendingCard) {
+        pendingCard.style.transition = 'transform 0.4s ease-out';
+        pendingCard.style.transform = `translate(${pendingDirection * window.innerWidth}px, 100px) rotate(${pendingDirection * 30}deg)`;
+        
+        setTimeout(() => {
+            currentCardIndex++;
+            renderCards();
+            pendingCard = null;
+        }, 300);
+    }
+});
+
+// Profile Editing Logic
+const myProfileBtn = document.getElementById('my-profile-btn');
+const profileModal = document.getElementById('profile-modal');
+const closeProfileModal = document.getElementById('close-profile-modal');
+const profileImgUpload = document.getElementById('profile-img-upload');
+const editProfileImg = document.getElementById('edit-profile-img');
+const myProfileImg = document.getElementById('my-profile-img');
+const saveProfileBtn = document.getElementById('save-profile-btn');
+const profileBioInput = document.getElementById('profile-bio-input');
+
+myProfileBtn.addEventListener('click', () => {
+    profileModal.classList.add('active');
+});
+
+closeProfileModal.addEventListener('click', () => {
+    profileModal.classList.remove('active');
+});
+
+profileImgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            editProfileImg.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+saveProfileBtn.addEventListener('click', () => {
+    myProfileImg.src = editProfileImg.src;
+    localStorage.setItem('myBio', profileBioInput.value);
+    localStorage.setItem('myImage', editProfileImg.src);
+    profileModal.classList.remove('active');
+});
+
+// Load saved data on init
+const savedBio = localStorage.getItem('myBio');
+const savedImage = localStorage.getItem('myImage');
+if (savedBio) profileBioInput.value = savedBio;
+if (savedImage) {
+    myProfileImg.src = savedImage;
+    editProfileImg.src = savedImage;
+}

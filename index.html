@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matcha - App de Citas</title>
+    <title>Tinder Remaster</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,11 +12,11 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <div class="profile-icon">
-                <img src="https://i.pravatar.cc/150?img=68" alt="Mi Perfil">
+            <div class="profile-icon" id="my-profile-btn" style="cursor: pointer;">
+                <img id="my-profile-img" src="https://i.pravatar.cc/150?img=68" alt="Mi Perfil">
             </div>
             <div class="logo">
-                <i class="fa-solid fa-fire flame-icon"></i> Matcha
+                <i class="fa-solid fa-fire flame-icon"></i> Tinder Remaster
             </div>
             <div class="chat-icon">
                 <i class="fa-solid fa-comments"></i>
@@ -51,6 +51,45 @@
             <button class="nav-item"><i class="fa-solid fa-star"></i></button>
             <button class="nav-item"><i class="fa-solid fa-user"></i></button>
         </nav>
+
+        <!-- Match Confirmation Modal -->
+        <div class="modal-overlay" id="match-modal">
+            <div class="modal-content">
+                <h3 class="modal-title">¿Seguro que quieres dar Like?</h3>
+                <div class="modal-profile">
+                    <img id="modal-img" src="" alt="Profile">
+                    <h4 id="modal-name"></h4>
+                    <p id="modal-bio"></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn cancel-btn" id="modal-cancel">Cancelar</button>
+                    <button class="modal-btn confirm-btn" id="modal-confirm">Sí, Confirmar!</button>
+                </div>
+            </div>
+        </div>
+        <!-- Edit Profile Modal -->
+        <div class="modal-overlay" id="profile-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="margin-bottom: 0;">Mi Perfil</h3>
+                    <button class="close-btn" id="close-profile-modal"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="profile-edit-form">
+                    <div class="profile-img-container">
+                        <img id="edit-profile-img" src="https://i.pravatar.cc/150?img=68" alt="Mi Perfil">
+                        <label for="profile-img-upload" class="edit-img-overlay">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                        <input type="file" id="profile-img-upload" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-bio-input">Sobre mí</label>
+                        <textarea id="profile-bio-input" rows="3" placeholder="Escribe algo sobre ti..."></textarea>
+                    </div>
+                    <button class="modal-btn confirm-btn" id="save-profile-btn" style="width: 100%; margin-top: 15px;">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
