@@ -43,6 +43,7 @@ const profiles = [
 
 const cardStack = document.getElementById('card-stack');
 let currentCardIndex = 0;
+let matchedProfiles = [];
 
 function createCard(profile, index) {
     const card = document.createElement('div');
@@ -252,6 +253,10 @@ modalConfirm.addEventListener('click', () => {
         pendingCard.style.transition = 'transform 0.4s ease-out';
         pendingCard.style.transform = `translate(${pendingDirection * window.innerWidth}px, 100px) rotate(${pendingDirection * 30}deg)`;
         
+        // Save match
+        matchedProfiles.push(profiles[currentCardIndex]);
+        updateChatView();
+
         setTimeout(() => {
             currentCardIndex++;
             renderCards();
@@ -304,3 +309,56 @@ if (savedImage) {
     myProfileImg.src = savedImage;
     editProfileImg.src = savedImage;
 }
+
+// Chat View Logic
+const chatIcon = document.querySelector('.chat-icon');
+const chatView = document.getElementById('chat-view');
+const closeChatBtn = document.getElementById('close-chat-btn');
+const matchesContainer = document.getElementById('matches-container');
+const messagesList = document.getElementById('messages-list');
+const badge = document.querySelector('.badge');
+
+chatIcon.addEventListener('click', () => {
+    chatView.classList.add('active');
+});
+
+closeChatBtn.addEventListener('click', () => {
+    chatView.classList.remove('active');
+});
+
+function updateChatView() {
+    if (matchedProfiles.length === 0) return;
+    
+    // Update badge
+    badge.textContent = matchedProfiles.length;
+    
+    // Render Matches Bubble
+    matchesContainer.innerHTML = '';
+    matchedProfiles.forEach(profile => {
+        const bubble = document.createElement('div');
+        bubble.className = 'match-bubble';
+        bubble.innerHTML = `
+            <img src="${profile.image}" alt="${profile.name}">
+            <span>${profile.name}</span>
+        `;
+        matchesContainer.appendChild(bubble);
+    });
+    
+    // Render Messages
+    messagesList.innerHTML = '';
+    matchedProfiles.forEach(profile => {
+        const msg = document.createElement('div');
+        msg.className = 'message-item';
+        msg.innerHTML = `
+            <img src="${profile.image}" alt="${profile.name}">
+            <div class="message-info">
+                <h5>${profile.name}</h5>
+                <p>¡Hola! Acabamos de hacer match 🎉</p>
+            </div>
+        `;
+        messagesList.appendChild(msg);
+    });
+}
+
+// Initial badge state
+badge.textContent = '0';
